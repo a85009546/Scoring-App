@@ -69,3 +69,7 @@ npm run build
 
 部署後，團隊成員可以通過手機瀏覽器訪問，無需安裝應用程式。
 
+## 訪問
+
+本專案使用 GitHub Actions 自動部署到 GitHub Pages。
+請訪問 https://a85009546.github.io/Scoring-App/
