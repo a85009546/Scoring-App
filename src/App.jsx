@@ -12,6 +12,8 @@ function App() {
   const [teams, setTeams] = useState(DEFAULT_TEAMS)
   const [showAddTeam, setShowAddTeam] = useState(false)
   const [newTeamName, setNewTeamName] = useState('')
+  const [editingTeamId, setEditingTeamId] = useState(null)
+  const [editingTeamName, setEditingTeamName] = useState('')
 
   const updateScore = (teamId, delta) => {
     setTeams(teams.map(team => 
@@ -60,6 +62,29 @@ function App() {
     }
   }
 
+  const startEditTeam = (teamId, currentName) => {
+    setEditingTeamId(teamId)
+    setEditingTeamName(currentName)
+  }
+
+  const cancelEditTeam = () => {
+    setEditingTeamId(null)
+    setEditingTeamName('')
+  }
+
+  const saveTeamName = (teamId) => {
+    if (editingTeamName.trim()) {
+      setTeams(teams.map(team => 
+        team.id === teamId 
+          ? { ...team, name: editingTeamName.trim() }
+          : team
+      ))
+      cancelEditTeam()
+    } else {
+      alert('隊伍名稱不能為空！')
+    }
+  }
+
   const sortedTeams = [...teams].sort((a, b) => b.score - a.score)
 
   return (
@@ -79,7 +104,51 @@ function App() {
               <div className="team-header">
                 <div className="team-info">
                   <span className="team-rank">#{rank}</span>
-                  <h2 className="team-name">{team.name}</h2>
+                  {editingTeamId === team.id ? (
+                    <div className="team-name-edit">
+                      <input
+                        type="text"
+                        value={editingTeamName}
+                        onChange={(e) => setEditingTeamName(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            saveTeamName(team.id)
+                          } else if (e.key === 'Escape') {
+                            cancelEditTeam()
+                          }
+                        }}
+                        className="team-name-input-edit"
+                        autoFocus
+                      />
+                      <div className="edit-buttons">
+                        <button 
+                          className="save-btn"
+                          onClick={() => saveTeamName(team.id)}
+                          aria-label="儲存"
+                        >
+                          ✓
+                        </button>
+                        <button 
+                          className="cancel-edit-btn"
+                          onClick={cancelEditTeam}
+                          aria-label="取消"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="team-name-container">
+                      <h2 className="team-name">{team.name}</h2>
+                      <button 
+                        className="edit-btn"
+                        onClick={() => startEditTeam(team.id, team.name)}
+                        aria-label="編輯隊伍名稱"
+                      >
+                        ✏️
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <button 
                   className="remove-btn"
